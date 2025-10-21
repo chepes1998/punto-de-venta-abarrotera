@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Punto de Venta - Abarrotera</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fuentes -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Firebase SDK (modo compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -60,6 +57,7 @@
 
     <!-- Contenido principal -->
     <div id="pos-container" class="max-w-7xl mx-auto opacity-0">
+        <!-- Header y resto del layout igual -->
         <header class="flex flex-col md:flex-row justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800">Punto de Venta | Abarrotera</h1>
             <div class="flex items-center space-x-4 mt-4 md:mt-0">
@@ -72,10 +70,7 @@
                 </div>
                 <button id="show-report-btn" class="py-2 px-4 rounded-md font-semibold btn-secondary flex items-center space-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list">
-                        <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-                        <path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>
-                    </svg>
+                        <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
                     <span>Corte Diario</span>
                 </button>
             </div>
@@ -143,44 +138,37 @@
         </main>
     </div>
 
-    <!-- Modales -->
+    <!-- Modales (igual que antes) -->
+    <!-- Reporte Modal -->
     <div id="report-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
         <div class="card w-full max-w-2xl max-h-[90vh] flex flex-col fade-in">
             <div class="flex justify-between items-center p-4 border-b">
                 <h2 class="text-2xl font-bold text-gray-800">Corte del Turno (Ventas Pendientes)</h2>
                 <button id="close-report-btn" class="text-gray-500 hover:text-gray-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
             <div class="p-6 overflow-y-auto" id="report-content"></div>
             <div class="p-4 border-t flex justify-end space-x-3">
                 <button id="download-report-btn" class="py-2 px-4 rounded-md font-semibold btn-success flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     <span>Descargar Reporte Actual</span>
                 </button>
                 <button id="close-cut-btn" class="py-2 px-4 rounded-md font-semibold btn-cut flex items-center space-x-2 disabled:opacity-50">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scissors">
-                        <path d="M20.5 10c-.88 0-1.74-.21-2.5-.62A4.14 4.14 0 0 1 12 7c0-2.21 1.79-4 4-4s4 1.79 4 4a4.14 4.14 0 0 1-6 3.38A4.14 4.14 0 0 1 8 7c0-2.21-1.79-4-4-4S0 5.09 0 7c0 2.21 1.79 4 4 4a4.14 4.14 0 0 1 6 3.38A4.14 4.14 0 0 1 12 17c0 2.21 1.79 4 4 4s4-1.79 4-4a4.14 4.14 0 0 1-6-3.38z"/>
-                        <line x1="14.88" y1="8.5" x2="12" y2="12"/>
-                    </svg>
+                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scissors"><path d="M20.5 10c-.88 0-1.74-.21-2.5-.62A4.14 4.14 0 0 1 12 7c0-2.21 1.79-4 4-4s4 1.79 4 4a4.14 4.14 0 0 1-6 3.38A4.14 4.14 0 0 1 8 7c0-2.21-1.79-4-4-4S0 5.09 0 7c0 2.21 1.79 4 4 4a4.14 4.14 0 0 1 6 3.38A4.14 4.14 0 0 1 12 17c0 2.21 1.79 4 4 4s4-1.79 4-4a4.14 4.14 0 0 1-6-3.38z"/><line x1="14.88" y1="8.5" x2="12" y2="12"/></svg>
                     <span>Realizar y Cerrar Corte</span>
                 </button>
             </div>
         </div>
     </div>
-
+    
+    <!-- Agregar producto -->
     <div id="add-product-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
-        <div class="card w-full max-w-md flex flex-col fade-in">
+       <div class="card w-full max-w-md flex flex-col fade-in">
             <div class="flex justify-between items-center p-4 border-b">
                 <h2 class="text-2xl font-bold text-gray-800">Agregar Nuevo Producto</h2>
                 <button id="close-add-product-btn" class="text-gray-500 hover:text-gray-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
             <form id="add-product-form" class="p-6 space-y-4">
@@ -197,14 +185,13 @@
         </div>
     </div>
 
+    <!-- Confirmar eliminación -->
     <div id="delete-confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
         <div class="card w-full max-w-md flex flex-col fade-in">
             <div class="flex justify-between items-center p-4 border-b">
                 <h2 class="text-2xl font-bold text-gray-800">Confirmar Eliminación</h2>
                 <button id="close-delete-confirm-btn" class="text-gray-500 hover:text-gray-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
             <div class="p-6">
@@ -216,7 +203,7 @@
             </div>
         </div>
     </div>
-
+    
     <div id="notification" class="fixed top-5 right-5 bg-green-500 text-white py-2 px-5 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300"></div>
 
     <script>
@@ -230,35 +217,14 @@
             appId: "1:203517262925:web:c80e45d1c9602e4ce63004"
         };
 
-        // Inicializar Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
         const salesCollectionRef = db.collection('artifacts').doc('mi-abarrotera-pos').collection('public').doc('data').collection('sales');
+        const productsCollectionRef = db.collection('artifacts').doc('mi-abarrotera-pos').collection('public').doc('data').collection('products');
 
-        // === DATOS ===
-        let products = [
-            { id: 1, name: 'Jarrito', price: 22.00, img: 'https://placehold.co/150x150/f97316/fff?text=Jarrito' },
-            { id: 2, name: 'Red cola 3lt', price: 32.00, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
-            { id: 3, name: 'Red cola 2lt', price: 25.00, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
-            { id: 4, name: 'Agua', price: 10.00, img: 'https://placehold.co/150x150/3b82f6/fff?text=Agua' },
-            { id: 5, name: 'Cigarros', price: 6.00, img: 'https://placehold.co/150x150/a8a29e/fff?text=Tabaco' },
-            { id: 6, name: 'Aceite', price: 21.00, img: 'https://placehold.co/150x150/facc15/333?text=Aceite' },
-            { id: 7, name: 'Sal', price: 15.00, img: 'https://placehold.co/150x150/e5e7eb/333?text=Sal' },
-            { id: 8, name: 'Pan Bimbo chico', price: 25.00, img: 'https://placehold.co/150x150/d1fae5/333?text=Pan' },
-            { id: 9, name: 'Tostadas', price: 35.00, img: 'https://placehold.co/150x150/f59e0b/fff?text=Tostada' },
-            { id: 10, name: 'Leche sabores', price: 10.00, img: 'https://placehold.co/150x150/ec4899/fff?text=Leche' },
-            { id: 11, name: 'Boing mediano', price: 15.00, img: 'https://placehold.co/150x150/84cc16/fff?text=Jugo' },
-            { id: 12, name: 'Encendedor', price: 7.00, img: 'https://placehold.co/150x150/f97316/fff?text=Fuego' },
-            { id: 13, name: 'Rico pollo', price: 5.00, img: 'https://placehold.co/150x150/fbbf24/333?text=Pollo' },
-            { id: 14, name: 'Llave chica', price: 20.00, img: 'https://placehold.co/150x150/9ca3af/fff?text=Llave' },
-            { id: 15, name: 'Llave grande', price: 30.00, img: 'https://placehold.co/150x150/9ca3af/fff?text=Llave' },
-            { id: 16, name: 'Papel de baño', price: 20.00, img: 'https://placehold.co/150x150/e0e7ff/333?text=Papel' },
-            { id: 17, name: 'Papel de baño suelto', price: 5.00, img: 'https://placehold.co/150x150/e0e7ff/333?text=Papel' },
-            { id: 18, name: 'Red cola 600ml', price: 14.00, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
-            { id: 19, name: 'Jarrito 600ml', price: 13.00, img: 'https://placehold.co/150x150/f97316/fff?text=Jarrito' },
-        ];
-
+        // === ESTADO ===
+        let products = [];
         const sellers = ['Vendedor J', 'Vendedor F'];
         const SELLER_COMMISSION_PER_ITEM = 1.00;
         let cart = [];
@@ -404,15 +370,9 @@
 
             try {
                 await salesCollectionRef.add(sale);
-                
-                // Limpiar carrito y campos
                 cart = [];
                 paidInput.value = '';
-                
-                // Actualizar UI
                 renderCart();
-                calculateChange();
-                
                 showNotification('¡Venta registrada y guardada en la nube con éxito!');
             } catch (error) {
                 console.error("Error al guardar la venta:", error);
@@ -431,6 +391,72 @@
                 console.error("Error al cargar ventas:", error);
                 showNotification('Error al conectar con Firebase.', true);
             });
+        };
+
+        // === NUEVO: Cargar productos desde Firestore ===
+        const loadProductsFromFirestore = () => {
+            productsCollectionRef.onSnapshot(snapshot => {
+                products = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                // Si no hay productos, cargar los iniciales una sola vez
+                if (products.length === 0) {
+                    const initialProducts = [
+                        { name: 'Jarrito', price: 22.00, img: 'https://placehold.co/150x150/f97316/fff?text=Jarrito' },
+                        { name: 'Red cola 3lt', price: 32.00, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
+                        { name: 'Red cola 2lt', price: 25.00, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
+                        { name: 'Agua', price: 10.00, img: 'https://placehold.co/150x150/3b82f6/fff?text=Agua' },
+                        { name: 'Cigarros', price: 6.00, img: 'https://placehold.co/150x150/a8a29e/fff?text=Tabaco' },
+                        { name: 'Aceite', price: 21.00, img: 'https://placehold.co/150x150/facc15/333?text=Aceite' },
+                        { name: 'Sal', price: 15.00, img: 'https://placehold.co/150x150/e5e7eb/333?text=Sal' },
+                        { name: 'Pan Bimbo chico', price: 25.00, img: 'https://placehold.co/150x150/d1fae5/333?text=Pan' },
+                        { name: 'Tostadas', price: 35.00, img: 'https://placehold.co/150x150/f59e0b/fff?text=Tostada' },
+                        { name: 'Leche sabores', price: 10.00, img: 'https://placehold.co/150x150/ec4899/fff?text=Leche' },
+                        { name: 'Boing mediano', price: 15.00, img: 'https://placehold.co/150x150/84cc16/fff?text=Jugo' },
+                        { name: 'Encendedor', price: 7.00, img: 'https://placehold.co/150x150/f97316/fff?text=Fuego' },
+                        { name: 'Rico pollo', price: 5.00, img: 'https://placehold.co/150x150/fbbf24/333?text=Pollo' },
+                        { name: 'Llave chica', price: 20.00, img: 'https://placehold.co/150x150/9ca3af/fff?text=Llave' },
+                        { name: 'Llave grande', price: 30.00, img: 'https://placehold.co/150x150/9ca3af/fff?text=Llave' },
+                        { name: 'Papel de baño', price: 20.00, img: 'https://placehold.co/150x150/e0e7ff/333?text=Papel' },
+                        { name: 'Papel de baño suelto', price: 5.00, img: 'https://placehold.co/150x150/e0e7ff/333?text=Papel' },
+                        { name: 'Red cola 600ml', price: 14.00, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
+                        { name: 'Jarrito 600ml', price: 13.00, img: 'https://placehold.co/150x150/f97316/fff?text=Jarrito' },
+                    ];
+                    initialProducts.forEach(async (p) => {
+                        await productsCollectionRef.add(p);
+                    });
+                }
+                renderProducts();
+            }, error => {
+                console.error("Error al cargar productos:", error);
+                showNotification('Error al cargar el catálogo.', true);
+            });
+        };
+
+        const addProductToFirestore = async (name, price) => {
+            const newProduct = {
+                name,
+                price: parseFloat(price),
+                img: `https://placehold.co/150x150/6d28d9/fff?text=${name.substring(0,3)}`
+            };
+            try {
+                await productsCollectionRef.add(newProduct);
+                showNotification(`Producto "${name}" agregado al catálogo.`);
+            } catch (error) {
+                console.error("Error al agregar producto:", error);
+                showNotification('Error al guardar el producto.', true);
+            }
+        };
+
+        const deleteProductFromFirestore = async (productId) => {
+            try {
+                await productsCollectionRef.doc(productId).delete();
+                showNotification('Producto eliminado del catálogo.');
+            } catch (error) {
+                console.error("Error al eliminar producto:", error);
+                showNotification('Error al eliminar el producto.', true);
+            }
         };
 
         const generateDailyReport = () => {
@@ -513,8 +539,16 @@
                     batch.update(saleDocRef, { cut_date: new Date().toISOString() });
                 });
                 await batch.commit();
-                showNotification('Corte diario realizado con éxito. Las ventas han sido archivadas.');
-                document.getElementById('report-modal').classList.add('hidden');
+                showNotification('Corte diario realizado con éxito.');
+                setTimeout(() => {
+                    generateDailyReport();
+                    const reportContent = document.getElementById('report-content');
+                    if (reportContent.querySelector('svg')?.classList.contains('text-green-500')) {
+                        setTimeout(() => {
+                            document.getElementById('report-modal').classList.add('hidden');
+                        }, 1500);
+                    }
+                }, 500);
             } catch (error) {
                 console.error("Error al cerrar el corte:", error);
                 showNotification("Error al cerrar el corte. Intenta de nuevo.", true);
@@ -556,10 +590,8 @@
 
         const confirmDeleteProduct = () => {
             if (productIdToDelete === null) return;
-            products = products.filter(p => p.id !== productIdToDelete);
-            renderProducts();
+            deleteProductFromFirestore(productIdToDelete);
             document.getElementById('delete-confirm-modal').classList.add('hidden');
-            showNotification('Producto eliminado del catálogo.');
             productIdToDelete = null;
         };
 
@@ -574,14 +606,12 @@
             }
 
             loadSalesFromFirestore();
+            loadProductsFromFirestore(); // ✅ Cargar productos desde Firebase
 
             setTimeout(() => {
                 document.getElementById('loading-overlay').classList.add('hidden');
                 document.getElementById('pos-container').classList.add('loaded', 'fade-in');
                 document.getElementById('pos-container').style.opacity = 1;
-
-                renderProducts();
-                renderCart();
                 renderSellers();
             }, 1000);
 
@@ -589,13 +619,13 @@
             document.getElementById('product-list').addEventListener('click', (e) => {
                 const deleteBtn = e.target.closest('.delete-product-btn');
                 if (deleteBtn) {
-                    const productId = parseInt(deleteBtn.dataset.productId);
+                    const productId = deleteBtn.dataset.productId;
                     showDeleteConfirm(productId);
                     return;
                 }
                 const card = e.target.closest('.card');
                 if (card && !e.target.closest('.delete-product-btn')) {
-                    const productId = parseInt(card.dataset.productId);
+                    const productId = card.dataset.productId;
                     addToCart(productId);
                 }
             });
@@ -603,7 +633,7 @@
             document.getElementById('cart-items').addEventListener('click', (e) => {
                 const button = e.target.closest('.remove-from-cart');
                 if (button) {
-                    const productId = parseInt(button.dataset.productId);
+                    const productId = button.dataset.productId;
                     removeFromCart(productId);
                 }
             });
@@ -635,20 +665,11 @@
             document.getElementById('add-product-form').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const name = document.getElementById('new-product-name').value;
-                const price = parseFloat(document.getElementById('new-product-price').value);
+                const price = document.getElementById('new-product-price').value;
                 if (name && !isNaN(price) && price > 0) {
-                    const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                    const newProduct = {
-                        id: newId,
-                        name,
-                        price,
-                        img: `https://placehold.co/150x150/6d28d9/fff?text=${name.substring(0,3)}`
-                    };
-                    products.push(newProduct);
-                    renderProducts();
+                    addProductToFirestore(name, price);
                     document.getElementById('add-product-modal').classList.add('hidden');
                     document.getElementById('add-product-form').reset();
-                    showNotification(`Producto "${name}" agregado al catálogo.`);
                 } else {
                     showNotification('Por favor, ingresa un nombre y precio válidos.', true);
                 }
