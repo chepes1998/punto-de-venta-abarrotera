@@ -60,7 +60,6 @@
 
     <!-- Contenido principal -->
     <div id="pos-container" class="max-w-7xl mx-auto opacity-0">
-        <!-- Header -->
         <header class="flex flex-col md:flex-row justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800">Punto de Venta | Abarrotera</h1>
             <div class="flex items-center space-x-4 mt-4 md:mt-0">
@@ -82,9 +81,7 @@
             </div>
         </header>
 
-        <!-- Layout principal -->
         <main class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            <!-- Catálogo -->
             <div class="lg:col-span-3">
                 <div class="card p-4">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-3">
@@ -106,7 +103,6 @@
                 </div>
             </div>
 
-            <!-- Carrito -->
             <div class="lg:col-span-2">
                 <div class="card p-4 sticky top-6">
                     <h2 class="text-xl font-semibold mb-4 text-gray-700">Carrito de Compra</h2>
@@ -148,7 +144,6 @@
     </div>
 
     <!-- Modales -->
-    <!-- Reporte -->
     <div id="report-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
         <div class="card w-full max-w-2xl max-h-[90vh] flex flex-col fade-in">
             <div class="flex justify-between items-center p-4 border-b">
@@ -178,7 +173,6 @@
         </div>
     </div>
 
-    <!-- Agregar producto -->
     <div id="add-product-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
         <div class="card w-full max-w-md flex flex-col fade-in">
             <div class="flex justify-between items-center p-4 border-b">
@@ -203,7 +197,6 @@
         </div>
     </div>
 
-    <!-- Confirmar eliminación -->
     <div id="delete-confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
         <div class="card w-full max-w-md flex flex-col fade-in">
             <div class="flex justify-between items-center p-4 border-b">
@@ -224,10 +217,8 @@
         </div>
     </div>
 
-    <!-- Notificación -->
     <div id="notification" class="fixed top-5 right-5 bg-green-500 text-white py-2 px-5 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300"></div>
 
-    <!-- Script principal -->
     <script>
         // === CONFIGURACIÓN DE FIREBASE ===
         const firebaseConfig = {
@@ -243,11 +234,9 @@
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-
-        // Referencia a la colección de ventas
         const salesCollectionRef = db.collection('artifacts').doc('mi-abarrotera-pos').collection('public').doc('data').collection('sales');
 
-        // === DATOS LOCALES ===
+        // === DATOS ===
         let products = [
             { id: 1, name: 'Jarrito', price: 22.00, img: 'https://placehold.co/150x150/f97316/fff?text=Jarrito' },
             { id: 2, name: 'Red cola 3lt', price: 32.00, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
@@ -288,7 +277,7 @@
             setTimeout(() => notificationEl.classList.add('translate-x-full'), 3000);
         };
 
-        // === FUNCIONES DE RENDERIZADO ===
+        // === RENDERIZADO ===
         const renderProducts = (productsToRender = products) => {
             const productListEl = document.getElementById('product-list');
             productListEl.innerHTML = '';
@@ -364,7 +353,7 @@
             });
         };
 
-        // === FUNCIONES DE LÓGICA ===
+        // === LÓGICA ===
         const addToCart = (productId) => {
             const product = products.find(p => p.id === productId);
             if (!product) return;
@@ -397,7 +386,8 @@
 
         const handleCheckout = async () => {
             const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            const paid = parseFloat(document.getElementById('amount-paid').value) || 0;
+            const paidInput = document.getElementById('amount-paid');
+            const paid = parseFloat(paidInput.value) || 0;
             
             if (paid < total) {
                 showNotification('El monto pagado es insuficiente.', true);
@@ -414,9 +404,15 @@
 
             try {
                 await salesCollectionRef.add(sale);
+                
+                // Limpiar carrito y campos
                 cart = [];
-                document.getElementById('amount-paid').value = '';
+                paidInput.value = '';
+                
+                // Actualizar UI
                 renderCart();
+                calculateChange();
+                
                 showNotification('¡Venta registrada y guardada en la nube con éxito!');
             } catch (error) {
                 console.error("Error al guardar la venta:", error);
@@ -431,7 +427,6 @@
                     ...doc.data(),
                     items: typeof doc.data().items === 'string' ? JSON.parse(doc.data().items) : doc.data().items
                 }));
-                console.log(`[Firestore] Cargadas ${allSales.length} ventas.`);
             }, error => {
                 console.error("Error al cargar ventas:", error);
                 showNotification('Error al conectar con Firebase.', true);
@@ -568,9 +563,8 @@
             productIdToDelete = null;
         };
 
-        // === EVENT LISTENERS ===
+        // === INICIALIZACIÓN ===
         document.addEventListener('DOMContentLoaded', async () => {
-            // Iniciar sesión anónima
             try {
                 await auth.signInAnonymously();
                 console.log("Autenticación anónima exitosa");
@@ -579,16 +573,13 @@
                 showNotification('Error al iniciar sesión en Firebase.', true);
             }
 
-            // Cargar ventas desde Firestore
             loadSalesFromFirestore();
 
-            // Ocultar loading
             setTimeout(() => {
                 document.getElementById('loading-overlay').classList.add('hidden');
                 document.getElementById('pos-container').classList.add('loaded', 'fade-in');
                 document.getElementById('pos-container').style.opacity = 1;
 
-                // Renderizar UI
                 renderProducts();
                 renderCart();
                 renderSellers();
