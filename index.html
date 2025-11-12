@@ -57,7 +57,6 @@
 
     <!-- Contenido principal -->
     <div id="pos-container" class="max-w-7xl mx-auto opacity-0">
-        <!-- Header y resto del layout igual -->
         <header class="flex flex-col md:flex-row justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800">Punto de Venta | Abarrotera</h1>
             <div class="flex items-center space-x-4 mt-4 md:mt-0">
@@ -68,6 +67,15 @@
                     </svg>
                     <select id="seller-select" class="p-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></select>
                 </div>
+                <button id="manage-sellers-btn" class="py-2 px-4 rounded-md font-semibold btn-secondary flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>Vendedores</span>
+                </button>
                 <button id="show-report-btn" class="py-2 px-4 rounded-md font-semibold btn-secondary flex items-center space-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list">
                         <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
@@ -138,7 +146,7 @@
         </main>
     </div>
 
-    <!-- Modales (igual que antes) -->
+    <!-- Modales -->
     <!-- Reporte Modal -->
     <div id="report-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
         <div class="card w-full max-w-2xl max-h-[90vh] flex flex-col fade-in">
@@ -180,6 +188,10 @@
                     <label for="new-product-price" class="block text-sm font-medium text-gray-700">Precio</label>
                     <input type="number" id="new-product-price" step="0.01" min="0" required class="w-full p-2 border rounded-md mt-1">
                 </div>
+                <div>
+                    <label for="new-product-stock" class="block text-sm font-medium text-gray-700">Stock (opcional)</label>
+                    <input type="number" id="new-product-stock" min="0" value="0" class="w-full p-2 border rounded-md mt-1">
+                </div>
                 <button type="submit" class="w-full py-2 rounded-md font-semibold btn-primary">Guardar Producto</button>
             </form>
         </div>
@@ -203,6 +215,56 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para gestionar vendedores -->
+    <div id="manage-sellers-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+        <div class="card w-full max-w-md flex flex-col fade-in">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h2 class="text-2xl font-bold text-gray-800">Gestionar Vendedores</h2>
+                <button id="close-manage-sellers-btn" class="text-gray-500 hover:text-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="add-seller-form" class="mb-4">
+                    <div class="flex space-x-2">
+                        <input type="text" id="new-seller-name" placeholder="Nombre del vendedor" class="flex-1 p-2 border rounded-md" required>
+                        <button type="submit" class="py-2 px-4 rounded-md font-semibold btn-success">Agregar</button>
+                    </div>
+                </form>
+                <div id="sellers-list" class="space-y-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar producto -->
+    <div id="edit-product-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+        <div class="card w-full max-w-md flex flex-col fade-in">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h2 class="text-2xl font-bold text-gray-800">Editar Producto</h2>
+                <button id="close-edit-product-btn" class="text-gray-500 hover:text-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <form id="edit-product-form" class="p-6 space-y-4">
+                <div>
+                    <label for="edit-product-name" class="block text-sm font-medium text-gray-700">Nombre</label>
+                    <input type="text" id="edit-product-name" required class="w-full p-2 border rounded-md mt-1">
+                </div>
+                <div>
+                    <label for="edit-product-price" class="block text-sm font-medium text-gray-700">Precio</label>
+                    <input type="number" id="edit-product-price" step="0.01" min="0" required class="w-full p-2 border rounded-md mt-1">
+                </div>
+                <div>
+                    <label for="edit-product-stock" class="block text-sm font-medium text-gray-700">Stock</label>
+                    <input type="number" id="edit-product-stock" min="0" class="w-full p-2 border rounded-md mt-1">
+                </div>
+                <button type="submit" class="w-full py-2 rounded-md font-semibold btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
     
     <div id="notification" class="fixed top-5 right-5 bg-green-500 text-white py-2 px-5 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300"></div>
 
@@ -222,13 +284,15 @@
         const auth = firebase.auth();
         const salesCollectionRef = db.collection('artifacts').doc('mi-abarrotera-pos').collection('public').doc('data').collection('sales');
         const productsCollectionRef = db.collection('artifacts').doc('mi-abarrotera-pos').collection('public').doc('data').collection('products');
+        const sellersCollectionRef = db.collection('artifacts').doc('mi-abarrotera-pos').collection('public').doc('data').collection('sellers');
 
         // === ESTADO ===
         let products = [];
-        const sellers = ['Vendedor J', 'Vendedor F'];
+        let sellers = ['Vendedor J', 'Vendedor F']; // Será reemplazado por Firestore
         const SELLER_COMMISSION_PER_ITEM = 1.00;
         let cart = [];
         let productIdToDelete = null;
+        let productIdToEdit = null;
         let allSales = [];
 
         // === FUNCIONES AUXILIARES ===
@@ -252,6 +316,7 @@
                 return;
             }
             productsToRender.forEach(product => {
+                const stockDisplay = product.stock !== undefined ? ` (${product.stock} en stock)` : '';
                 const productCard = document.createElement('div');
                 productCard.className = 'card p-2 text-center cursor-pointer hover:shadow-lg hover:scale-105 relative';
                 productCard.dataset.productId = product.id;
@@ -259,9 +324,15 @@
                     <img src="${product.img}" alt="${product.name}" class="mx-auto h-20 w-20 object-cover rounded-md mb-2" onerror="this.onerror=null;this.src='https://placehold.co/150x150/9333ea/fff?text=Producto'">
                     <h3 class="font-semibold text-sm text-gray-800 truncate">${product.name}</h3>
                     <p class="text-blue-600 font-bold">${formatCurrency(product.price)}</p>
+                    <p class="text-xs text-gray-500">${stockDisplay}</p>
                     <button class="absolute top-1 right-1 text-red-500 hover:text-red-700 delete-product-btn" data-product-id="${product.id}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                    <button class="absolute top-1 left-1 text-blue-500 hover:text-blue-700 edit-product-btn" data-product-id="${product.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                     </button>
                 `;
@@ -312,10 +383,33 @@
             calculateChange(); 
         };
 
-        const renderSellers = () => {
-            const sellerSelectEl = document.getElementById('seller-select');
+        const renderSellersSelect = () => {
+            const selectEl = document.getElementById('seller-select');
+            selectEl.innerHTML = '';
             sellers.forEach(seller => {
-                sellerSelectEl.insertAdjacentHTML('beforeend', `<option value="${seller}">${seller}</option>`);
+                const option = document.createElement('option');
+                option.value = seller;
+                option.textContent = seller;
+                selectEl.appendChild(option);
+            });
+        };
+
+        const renderSellersList = () => {
+            const listEl = document.getElementById('sellers-list');
+            listEl.innerHTML = '';
+            sellers.forEach((seller, index) => {
+                if (index < 2) return; // No mostrar los predeterminados
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center p-2 bg-gray-50 rounded';
+                div.innerHTML = `
+                    <span>${seller}</span>
+                    <button class="text-red-500 hover:text-red-700 delete-seller-btn" data-seller="${seller}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                `;
+                listEl.appendChild(div);
             });
         };
 
@@ -370,10 +464,22 @@
 
             try {
                 await salesCollectionRef.add(sale);
+                // Actualizar stock en Firestore
+                const batch = db.batch();
+                for (let item of cart) {
+                    const productRef = productsCollectionRef.doc(item.id);
+                    const product = products.find(p => p.id === item.id);
+                    if (product && product.stock !== undefined) {
+                        const newStock = Math.max(0, product.stock - item.quantity); // No permitir negativos
+                        batch.update(productRef, { stock: newStock });
+                    }
+                }
+                await batch.commit();
+
                 cart = [];
                 paidInput.value = '';
                 renderCart();
-                showNotification('¡Venta registrada y guardada en la nube con éxito!');
+                showNotification('¡Venta registrada y stock actualizado!');
             } catch (error) {
                 console.error("Error al guardar la venta:", error);
                 showNotification('Error al guardar la venta. Revisa la conexión.', true);
@@ -393,7 +499,6 @@
             });
         };
 
-        // === NUEVO: Cargar productos desde Firestore ===
         const loadProductsFromFirestore = () => {
             productsCollectionRef.onSnapshot(snapshot => {
                 products = snapshot.docs.map(doc => ({
@@ -403,25 +508,25 @@
                 // Si no hay productos, cargar los iniciales una sola vez
                 if (products.length === 0) {
                     const initialProducts = [
-                        { name: 'Jarrito', price: 22.00, img: 'https://placehold.co/150x150/f97316/fff?text=Jarrito' },
-                        { name: 'Red cola 3lt', price: 32.00, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
-                        { name: 'Red cola 2lt', price: 25.00, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
-                        { name: 'Agua', price: 10.00, img: 'https://placehold.co/150x150/3b82f6/fff?text=Agua' },
-                        { name: 'Cigarros', price: 6.00, img: 'https://placehold.co/150x150/a8a29e/fff?text=Tabaco' },
-                        { name: 'Aceite', price: 21.00, img: 'https://placehold.co/150x150/facc15/333?text=Aceite' },
-                        { name: 'Sal', price: 15.00, img: 'https://placehold.co/150x150/e5e7eb/333?text=Sal' },
-                        { name: 'Pan Bimbo chico', price: 25.00, img: 'https://placehold.co/150x150/d1fae5/333?text=Pan' },
-                        { name: 'Tostadas', price: 35.00, img: 'https://placehold.co/150x150/f59e0b/fff?text=Tostada' },
-                        { name: 'Leche sabores', price: 10.00, img: 'https://placehold.co/150x150/ec4899/fff?text=Leche' },
-                        { name: 'Boing mediano', price: 15.00, img: 'https://placehold.co/150x150/84cc16/fff?text=Jugo' },
-                        { name: 'Encendedor', price: 7.00, img: 'https://placehold.co/150x150/f97316/fff?text=Fuego' },
-                        { name: 'Rico pollo', price: 5.00, img: 'https://placehold.co/150x150/fbbf24/333?text=Pollo' },
-                        { name: 'Llave chica', price: 20.00, img: 'https://placehold.co/150x150/9ca3af/fff?text=Llave' },
-                        { name: 'Llave grande', price: 30.00, img: 'https://placehold.co/150x150/9ca3af/fff?text=Llave' },
-                        { name: 'Papel de baño', price: 20.00, img: 'https://placehold.co/150x150/e0e7ff/333?text=Papel' },
-                        { name: 'Papel de baño suelto', price: 5.00, img: 'https://placehold.co/150x150/e0e7ff/333?text=Papel' },
-                        { name: 'Red cola 600ml', price: 14.00, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
-                        { name: 'Jarrito 600ml', price: 13.00, img: 'https://placehold.co/150x150/f97316/fff?text=Jarrito' },
+                        { name: 'Jarrito', price: 22.00, stock: 10, img: 'https://placehold.co/150x150/f97316/fff?text=Jarrito' },
+                        { name: 'Red cola 3lt', price: 32.00, stock: 5, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
+                        { name: 'Red cola 2lt', price: 25.00, stock: 8, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
+                        { name: 'Agua', price: 10.00, stock: 20, img: 'https://placehold.co/150x150/3b82f6/fff?text=Agua' },
+                        { name: 'Cigarros', price: 6.00, stock: 30, img: 'https://placehold.co/150x150/a8a29e/fff?text=Tabaco' },
+                        { name: 'Aceite', price: 21.00, stock: 15, img: 'https://placehold.co/150x150/facc15/333?text=Aceite' },
+                        { name: 'Sal', price: 15.00, stock: 25, img: 'https://placehold.co/150x150/e5e7eb/333?text=Sal' },
+                        { name: 'Pan Bimbo chico', price: 25.00, stock: 12, img: 'https://placehold.co/150x150/d1fae5/333?text=Pan' },
+                        { name: 'Tostadas', price: 35.00, stock: 7, img: 'https://placehold.co/150x150/f59e0b/fff?text=Tostada' },
+                        { name: 'Leche sabores', price: 10.00, stock: 18, img: 'https://placehold.co/150x150/ec4899/fff?text=Leche' },
+                        { name: 'Boing mediano', price: 15.00, stock: 14, img: 'https://placehold.co/150x150/84cc16/fff?text=Jugo' },
+                        { name: 'Encendedor', price: 7.00, stock: 40, img: 'https://placehold.co/150x150/f97316/fff?text=Fuego' },
+                        { name: 'Rico pollo', price: 5.00, stock: 50, img: 'https://placehold.co/150x150/fbbf24/333?text=Pollo' },
+                        { name: 'Llave chica', price: 20.00, stock: 6, img: 'https://placehold.co/150x150/9ca3af/fff?text=Llave' },
+                        { name: 'Llave grande', price: 30.00, stock: 4, img: 'https://placehold.co/150x150/9ca3af/fff?text=Llave' },
+                        { name: 'Papel de baño', price: 20.00, stock: 9, img: 'https://placehold.co/150x150/e0e7ff/333?text=Papel' },
+                        { name: 'Papel de baño suelto', price: 5.00, stock: 35, img: 'https://placehold.co/150x150/e0e7ff/333?text=Papel' },
+                        { name: 'Red cola 600ml', price: 14.00, stock: 16, img: 'https://placehold.co/150x150/ef4444/fff?text=Cola' },
+                        { name: 'Jarrito 600ml', price: 13.00, stock: 11, img: 'https://placehold.co/150x150/f97316/fff?text=Jarrito' },
                     ];
                     initialProducts.forEach(async (p) => {
                         await productsCollectionRef.add(p);
@@ -434,10 +539,23 @@
             });
         };
 
-        const addProductToFirestore = async (name, price) => {
+        const loadSellersFromFirestore = () => {
+            sellersCollectionRef.onSnapshot(snapshot => {
+                const loadedSellers = snapshot.docs.map(doc => doc.data().name);
+                sellers = [...['Vendedor J', 'Vendedor F'], ...loadedSellers];
+                renderSellersSelect();
+                renderSellersList();
+            }, error => {
+                console.error("Error al cargar vendedores:", error);
+                showNotification('Error al cargar vendedores.', true);
+            });
+        };
+
+        const addProductToFirestore = async (name, price, stock = 0) => {
             const newProduct = {
                 name,
                 price: parseFloat(price),
+                stock: parseInt(stock),
                 img: `https://placehold.co/150x150/6d28d9/fff?text=${name.substring(0,3)}`
             };
             try {
@@ -449,6 +567,16 @@
             }
         };
 
+        const updateProductInFirestore = async (id, updates) => {
+            try {
+                await productsCollectionRef.doc(id).update(updates);
+                showNotification('Producto actualizado.');
+            } catch (error) {
+                console.error("Error al actualizar producto:", error);
+                showNotification('Error al actualizar el producto.', true);
+            }
+        };
+
         const deleteProductFromFirestore = async (productId) => {
             try {
                 await productsCollectionRef.doc(productId).delete();
@@ -456,6 +584,29 @@
             } catch (error) {
                 console.error("Error al eliminar producto:", error);
                 showNotification('Error al eliminar el producto.', true);
+            }
+        };
+
+        const addSellerToFirestore = async (name) => {
+            try {
+                await sellersCollectionRef.add({ name });
+                showNotification(`Vendedor "${name}" agregado.`);
+            } catch (error) {
+                console.error("Error al agregar vendedor:", error);
+                showNotification('Error al guardar el vendedor.', true);
+            }
+        };
+
+        const deleteSellerFromFirestore = async (name) => {
+            try {
+                const querySnapshot = await sellersCollectionRef.where('name', '==', name).get();
+                querySnapshot.forEach(async (doc) => {
+                    await doc.ref.delete();
+                });
+                showNotification(`Vendedor "${name}" eliminado.`);
+            } catch (error) {
+                console.error("Error al eliminar vendedor:", error);
+                showNotification('Error al eliminar el vendedor.', true);
             }
         };
 
@@ -588,6 +739,16 @@
             document.getElementById('delete-confirm-modal').classList.remove('hidden');
         };
 
+        const showEditProduct = (productId) => {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            productIdToEdit = productId;
+            document.getElementById('edit-product-name').value = product.name;
+            document.getElementById('edit-product-price').value = product.price;
+            document.getElementById('edit-product-stock').value = product.stock || 0;
+            document.getElementById('edit-product-modal').classList.remove('hidden');
+        };
+
         const confirmDeleteProduct = () => {
             if (productIdToDelete === null) return;
             deleteProductFromFirestore(productIdToDelete);
@@ -606,13 +767,14 @@
             }
 
             loadSalesFromFirestore();
-            loadProductsFromFirestore(); // ✅ Cargar productos desde Firebase
+            loadProductsFromFirestore();
+            loadSellersFromFirestore(); // ✅ Cargar vendedores desde Firestore
 
             setTimeout(() => {
                 document.getElementById('loading-overlay').classList.add('hidden');
                 document.getElementById('pos-container').classList.add('loaded', 'fade-in');
                 document.getElementById('pos-container').style.opacity = 1;
-                renderSellers();
+                renderSellersSelect();
             }, 1000);
 
             // Eventos
@@ -623,8 +785,14 @@
                     showDeleteConfirm(productId);
                     return;
                 }
+                const editBtn = e.target.closest('.edit-product-btn');
+                if (editBtn) {
+                    const productId = editBtn.dataset.productId;
+                    showEditProduct(productId);
+                    return;
+                }
                 const card = e.target.closest('.card');
-                if (card && !e.target.closest('.delete-product-btn')) {
+                if (card && !e.target.closest('.delete-product-btn') && !e.target.closest('.edit-product-btn')) {
                     const productId = card.dataset.productId;
                     addToCart(productId);
                 }
@@ -666,12 +834,58 @@
                 e.preventDefault();
                 const name = document.getElementById('new-product-name').value;
                 const price = document.getElementById('new-product-price').value;
+                const stock = document.getElementById('new-product-stock').value || 0;
                 if (name && !isNaN(price) && price > 0) {
-                    addProductToFirestore(name, price);
+                    addProductToFirestore(name, price, stock);
                     document.getElementById('add-product-modal').classList.add('hidden');
                     document.getElementById('add-product-form').reset();
                 } else {
                     showNotification('Por favor, ingresa un nombre y precio válidos.', true);
+                }
+            });
+
+            // Editar producto
+            document.getElementById('edit-product-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('edit-product-name').value;
+                const price = document.getElementById('edit-product-price').value;
+                const stock = document.getElementById('edit-product-stock').value;
+                if (name && !isNaN(price) && price > 0 && !isNaN(stock)) {
+                    updateProductInFirestore(productIdToEdit, { name, price: parseFloat(price), stock: parseInt(stock) });
+                    document.getElementById('edit-product-modal').classList.add('hidden');
+                    productIdToEdit = null;
+                } else {
+                    showNotification('Por favor, ingresa datos válidos.', true);
+                }
+            });
+            document.getElementById('close-edit-product-btn').addEventListener('click', () => {
+                document.getElementById('edit-product-modal').classList.add('hidden');
+                productIdToEdit = null;
+            });
+
+            // Gestionar vendedores
+            document.getElementById('manage-sellers-btn').addEventListener('click', () => {
+                document.getElementById('manage-sellers-modal').classList.remove('hidden');
+                renderSellersList();
+            });
+            document.getElementById('close-manage-sellers-btn').addEventListener('click', () => {
+                document.getElementById('manage-sellers-modal').classList.add('hidden');
+            });
+            document.getElementById('add-seller-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('new-seller-name').value.trim();
+                if (name && !sellers.includes(name)) {
+                    addSellerToFirestore(name);
+                    document.getElementById('new-seller-name').value = '';
+                } else {
+                    showNotification('Ese vendedor ya existe.', true);
+                }
+            });
+            document.getElementById('sellers-list').addEventListener('click', (e) => {
+                const btn = e.target.closest('.delete-seller-btn');
+                if (btn) {
+                    const name = btn.dataset.seller;
+                    deleteSellerFromFirestore(name);
                 }
             });
         });
