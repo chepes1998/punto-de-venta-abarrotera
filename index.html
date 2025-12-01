@@ -122,20 +122,21 @@
                             <span>Total:</span>
                             <span id="cart-total">$0.00</span>
                         </div>
-                        <!-- Nueva opción: Método de pago -->
-                        <div class="mb-3">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Método de Pago</label>
+
+                        <!-- Método de Pago (Botones) -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Método de Pago</label>
                             <div class="flex space-x-3">
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="payment-method" value="efectivo" checked class="mr-2">
-                                    <span>Efectivo</span>
-                                </label>
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="payment-method" value="transferencia" class="mr-2">
-                                    <span>Transferencia</span>
-                                </label>
+                                <button type="button" id="btn-efectivo" class="flex-1 py-2 px-4 rounded-md font-semibold bg-blue-500 text-white shadow hover:bg-blue-600 transition">
+                                    💵 Efectivo
+                                </button>
+                                <button type="button" id="btn-transferencia" class="flex-1 py-2 px-4 rounded-md font-semibold bg-emerald-500 text-white shadow hover:bg-emerald-600 transition">
+                                    📲 Transferencia
+                                </button>
                             </div>
+                            <input type="hidden" id="payment-method" value="efectivo">
                         </div>
+
                         <div class="space-y-3">
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -160,10 +161,8 @@
         </main>
     </div>
 
-    <!-- Modales (igual que antes, sin cambios) -->
-    <!-- ... (todos tus modales permanecen igual, no los repito por brevedad) ... -->
-
-    <!-- Reporte Modal (solo se modifica el contenido dinámico, no el HTML) -->
+    <!-- Modales -->
+    <!-- Reporte Modal -->
     <div id="report-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
         <div class="card w-full max-w-2xl max-h-[90vh] flex flex-col fade-in">
             <div class="flex justify-between items-center p-4 border-b">
@@ -459,20 +458,43 @@
             }
         };
 
-        // === ¡¡¡NUEVA FUNCIÓN: OBTENER MÉTODO DE PAGO!!! ===
-        const getPaymentMethod = () => {
-            const radios = document.querySelectorAll('input[name="payment-method"]');
-            for (let radio of radios) {
-                if (radio.checked) return radio.value;
+        // === LÓGICA PARA BOTONES DE MÉTODO DE PAGO ===
+        let metodoPago = 'efectivo';
+
+        function actualizarMetodoPago(metodo) {
+            metodoPago = metodo;
+            document.getElementById('payment-method').value = metodo;
+            
+            const btnEfectivo = document.getElementById('btn-efectivo');
+            const btnTransferencia = document.getElementById('btn-transferencia');
+            const amountPaidInput = document.getElementById('amount-paid');
+            const changeInput = document.getElementById('change');
+
+            if (metodo === 'efectivo') {
+                btnEfectivo.classList.replace('bg-blue-500', 'bg-blue-600');
+                btnTransferencia.classList.replace('bg-emerald-600', 'bg-emerald-500');
+                
+                amountPaidInput.disabled = false;
+                amountPaidInput.classList.remove('bg-gray-100');
+                amountPaidInput.classList.add('border');
+                changeInput.value = '';
+                calculateChange();
+            } else {
+                btnTransferencia.classList.replace('bg-emerald-500', 'bg-emerald-600');
+                btnEfectivo.classList.replace('bg-blue-600', 'bg-blue-500');
+                
+                amountPaidInput.disabled = true;
+                amountPaidInput.value = '';
+                amountPaidInput.classList.add('bg-gray-100');
+                amountPaidInput.classList.remove('border');
+                changeInput.value = '$0.00';
             }
-            return 'efectivo';
-        };
+        }
 
         const handleCheckout = async () => {
             const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            const paidInput = document.getElementById('amount-paid');
-            const paid = parseFloat(paidInput.value) || 0;
-            const paymentMethod = getPaymentMethod();
+            const paid = metodoPago === 'efectivo' ? parseFloat(document.getElementById('amount-paid').value) || 0 : total;
+            const paymentMethod = metodoPago;
             
             if (paymentMethod === 'efectivo' && paid < total) {
                 showNotification('El monto pagado es insuficiente.', true);
@@ -485,12 +507,11 @@
                 total: total,
                 date: new Date().toISOString(),
                 cut_date: null,
-                payment_method: paymentMethod // ✅ Guardamos el método de pago
+                payment_method: paymentMethod
             };
 
             try {
                 await salesCollectionRef.add(sale);
-                // Actualizar stock
                 const batch = db.batch();
                 for (let item of cart) {
                     const productRef = productsCollectionRef.doc(item.id);
@@ -503,8 +524,7 @@
                 await batch.commit();
 
                 cart = [];
-                paidInput.value = '';
-                document.querySelectorAll('input[name="payment-method"]')[0].checked = true; // reset a efectivo
+                actualizarMetodoPago('efectivo');
                 renderCart();
                 showNotification('¡Venta registrada!');
             } catch (error) {
@@ -521,7 +541,6 @@
                     ...doc.data()
                 }));
 
-                // Solo si no hay productos, cargar iniciales (una sola vez)
                 if (products.length === 0) {
                     const initialProducts = [
                         { name: 'Jarrito', price: 22.00, stock: 10, img: 'https://placehold.co/150x150/f97316/fff?text=Jarrito' },
@@ -549,14 +568,12 @@
                     });
                 }
 
-                renderProducts(); // ✅ SIEMPRE renderizamos
+                renderProducts();
             }, error => {
                 console.error("Error al cargar productos:", error);
                 showNotification('Error al cargar el catálogo.', true);
             });
         };
-
-        // === RESTO DE FUNCIONES SIN CAMBIOS (solo modificado generateDailyReport y downloadReport) ===
 
         const loadSalesFromFirestore = () => {
             salesCollectionRef.onSnapshot(snapshot => {
@@ -642,7 +659,6 @@
             }
         };
 
-        // === MODIFICADA: generateDailyReport (muestra método de pago) ===
         const generateDailyReport = () => {
             const currentReportSales = allSales.filter(sale => !sale.cut_date);
             const reportContentEl = document.getElementById('report-content');
@@ -753,7 +769,6 @@
             }
         };
 
-        // === MODIFICADA: downloadReport (incluye método de pago) ===
         const downloadReport = () => {
             const reportContentEl = document.getElementById('report-content');
             let textContent = `REPORTE DE CORTE - ${new Date().toLocaleString()}\n\n`;
@@ -818,7 +833,7 @@
             }
 
             loadSalesFromFirestore();
-            loadProductsFromFirestore(); // ✅ Usa la versión corregida
+            loadProductsFromFirestore();
             loadSellersFromFirestore();
 
             setTimeout(() => {
@@ -828,7 +843,7 @@
                 renderSellersSelect();
             }, 1000);
 
-            // Eventos (sin cambios, excepto ya usa getPaymentMethod)
+            // Eventos
             document.getElementById('product-list').addEventListener('click', (e) => {
                 const deleteBtn = e.target.closest('.delete-product-btn');
                 if (deleteBtn) {
@@ -937,6 +952,10 @@
                     deleteSellerFromFirestore(name);
                 }
             });
+
+            // Botones método de pago
+            document.getElementById('btn-efectivo').addEventListener('click', () => actualizarMetodoPago('efectivo'));
+            document.getElementById('btn-transferencia').addEventListener('click', () => actualizarMetodoPago('transferencia'));
         });
     </script>
 </body>
