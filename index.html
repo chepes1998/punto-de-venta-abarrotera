@@ -493,7 +493,8 @@
 
         const handleCheckout = async () => {
             const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            const paid = metodoPago === 'efectivo' ? parseFloat(document.getElementById('amount-paid').value) || 0 : total;
+            const paidInput = document.getElementById('amount-paid');
+            const paid = metodoPago === 'efectivo' ? parseFloat(paidInput.value) || 0 : total;
             const paymentMethod = metodoPago;
             
             if (paymentMethod === 'efectivo' && paid < total) {
@@ -523,8 +524,10 @@
                 }
                 await batch.commit();
 
+                // ✅ Limpieza total después de cobrar
                 cart = [];
-                actualizarMetodoPago('efectivo');
+                paidInput.value = ''; // ← ¡Se limpia el campo "Paga con"!
+                actualizarMetodoPago('efectivo'); // ← Vuelve a modo efectivo
                 renderCart();
                 showNotification('¡Venta registrada!');
             } catch (error) {
