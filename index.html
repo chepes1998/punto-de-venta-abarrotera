@@ -126,18 +126,25 @@
                         <!-- Método de Pago (Botones) -->
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Método de Pago</label>
-                            <div class="flex space-x-3">
-                                <button type="button" id="btn-efectivo" class="flex-1 py-2 px-4 rounded-md font-semibold bg-blue-500 text-white shadow hover:bg-blue-600 transition">
-                                    💵 Efectivo
-                                </button>
-                                <button type="button" id="btn-transferencia" class="flex-1 py-2 px-4 rounded-md font-semibold bg-emerald-500 text-white shadow hover:bg-emerald-600 transition">
-                                    📲 Transferencia
+                            <div class="flex flex-col space-y-3">
+                                <div class="flex space-x-3">
+                                    <button type="button" id="btn-efectivo" class="flex-1 py-2 px-4 rounded-md font-semibold bg-blue-500 text-white shadow hover:bg-blue-600 transition">
+                                        💵 Efectivo
+                                    </button>
+                                    <button type="button" id="btn-transferencia" class="flex-1 py-2 px-4 rounded-md font-semibold bg-emerald-500 text-white shadow hover:bg-emerald-600 transition">
+                                        📲 Transferencia
+                                    </button>
+                                </div>
+                                <button type="button" id="btn-tarjeta" class="py-2 px-4 rounded-md font-semibold bg-orange-500 text-white shadow hover:bg-orange-600 transition">
+                                    💳 Tarjeta (Clip)
                                 </button>
                             </div>
                             <input type="hidden" id="payment-method" value="efectivo">
                         </div>
 
-                        <div class="space-y-3">
+                        <!-- Pago en efectivo / tarjeta -->
+                        <div id="payment-fields" class="space-y-3">
+                            <!-- Monto recibido -->
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
                                     <label for="amount-paid" class="block text-sm font-medium text-gray-700">Paga con:</label>
@@ -148,13 +155,20 @@
                                     <input type="text" id="change" placeholder="$0.00" readonly class="w-full p-2 border rounded-md mt-1 text-lg bg-gray-100 font-bold text-green-600">
                                 </div>
                             </div>
-                            <button id="checkout-btn" class="w-full py-3 rounded-md font-bold text-lg btn-primary flex justify-center items-center space-x-2" disabled>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart">
-                                    <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
-                                </svg>
-                                <span>Cobrar</span>
-                            </button>
+
+                            <!-- Ganancia neta con tarjeta -->
+                            <div id="net-income-field" class="hidden">
+                                <label for="net-income" class="block text-sm font-medium text-gray-700">Ganancia Neta (Clip):</label>
+                                <input type="text" id="net-income" placeholder="$0.00" readonly class="w-full p-2 border rounded-md mt-1 text-lg bg-blue-50 font-bold text-blue-700">
+                            </div>
                         </div>
+
+                        <button id="checkout-btn" class="w-full py-3 rounded-md font-bold text-lg btn-primary flex justify-center items-center space-x-2" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart">
+                                <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                            </svg>
+                            <span>Cobrar</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -448,13 +462,36 @@
         const calculateChange = () => {
             const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
             const paid = parseFloat(document.getElementById('amount-paid').value) || 0;
-            const change = paid - total;
             const changeEl = document.getElementById('change');
-            
-            if (paid > 0 && change >= 0) {
-                changeEl.value = formatCurrency(change);
-            } else {
-                changeEl.value = '';
+            const netIncomeEl = document.getElementById('net-income');
+            const netIncomeField = document.getElementById('net-income-field');
+
+            // Ocultar el campo de ganancia neta por defecto
+            netIncomeField.classList.add('hidden');
+
+            if (metodoPago === 'tarjeta') {
+                // Mostrar ganancia neta
+                netIncomeField.classList.remove('hidden');
+                
+                // Calcular comisión e IVA
+                const commission = total * 0.036;
+                const ivaOnCommission = commission * 0.16;
+                const netIncome = total - commission - ivaOnCommission;
+                
+                // Mostrar en el campo
+                netIncomeEl.value = formatCurrency(netIncome);
+                
+                // Cambio siempre es $0.00 en tarjeta
+                changeEl.value = '$0.00';
+            } else if (metodoPago === 'efectivo') {
+                const change = paid - total;
+                if (paid > 0 && change >= 0) {
+                    changeEl.value = formatCurrency(change);
+                } else {
+                    changeEl.value = '';
+                }
+            } else if (metodoPago === 'transferencia') {
+                changeEl.value = '$0.00';
             }
         };
 
@@ -467,39 +504,75 @@
             
             const btnEfectivo = document.getElementById('btn-efectivo');
             const btnTransferencia = document.getElementById('btn-transferencia');
+            const btnTarjeta = document.getElementById('btn-tarjeta');
             const amountPaidInput = document.getElementById('amount-paid');
             const changeInput = document.getElementById('change');
 
+            // Resetear todos los botones
+            btnEfectivo.classList.remove('bg-blue-600', 'text-white');
+            btnEfectivo.classList.add('bg-blue-500');
+            btnTransferencia.classList.remove('bg-emerald-600', 'text-white');
+            btnTransferencia.classList.add('bg-emerald-500');
+            btnTarjeta.classList.remove('bg-orange-600', 'text-white');
+            btnTarjeta.classList.add('bg-orange-500');
+
             if (metodo === 'efectivo') {
-                btnEfectivo.classList.replace('bg-blue-500', 'bg-blue-600');
-                btnTransferencia.classList.replace('bg-emerald-600', 'bg-emerald-500');
+                btnEfectivo.classList.add('bg-blue-600', 'text-white');
                 
                 amountPaidInput.disabled = false;
                 amountPaidInput.classList.remove('bg-gray-100');
                 amountPaidInput.classList.add('border');
                 changeInput.value = '';
                 calculateChange();
-            } else {
-                btnTransferencia.classList.replace('bg-emerald-500', 'bg-emerald-600');
-                btnEfectivo.classList.replace('bg-blue-600', 'bg-blue-500');
+            } else if (metodo === 'transferencia') {
+                btnTransferencia.classList.add('bg-emerald-600', 'text-white');
                 
                 amountPaidInput.disabled = true;
                 amountPaidInput.value = '';
                 amountPaidInput.classList.add('bg-gray-100');
                 amountPaidInput.classList.remove('border');
                 changeInput.value = '$0.00';
+            } else if (metodo === 'tarjeta') {
+                btnTarjeta.classList.add('bg-orange-600', 'text-white');
+                
+                amountPaidInput.disabled = false;
+                amountPaidInput.classList.remove('bg-gray-100');
+                amountPaidInput.classList.add('border');
+                changeInput.value = '$0.00'; // En tarjeta no hay cambio
+                calculateChange(); // Calculará el cambio como 0 si el monto es igual al total
             }
         }
 
         const handleCheckout = async () => {
             const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
             const paidInput = document.getElementById('amount-paid');
-            const paid = metodoPago === 'efectivo' ? parseFloat(paidInput.value) || 0 : total;
+            let paid = parseFloat(paidInput.value) || 0;
             const paymentMethod = metodoPago;
             
             if (paymentMethod === 'efectivo' && paid < total) {
                 showNotification('El monto pagado es insuficiente.', true);
                 return;
+            }
+
+            // Calcular la ganancia neta si es pago con tarjeta
+            let netAmount = total; // Por defecto, la ganancia neta es el total
+            let commissionDetails = null;
+
+            if (paymentMethod === 'tarjeta') {
+                // Comisión del 3.60%
+                const commissionRate = 0.036;
+                const commission = total * commissionRate;
+                // IVA del 16% sobre la comisión
+                const ivaOnCommission = commission * 0.16;
+                // Ganancia neta
+                netAmount = total - commission - ivaOnCommission;
+                // Guardar detalles para el reporte
+                commissionDetails = {
+                    subtotal: total,
+                    commission: commission,
+                    ivaOnCommission: ivaOnCommission,
+                    netAmount: netAmount
+                };
             }
 
             const sale = {
@@ -508,7 +581,8 @@
                 total: total,
                 date: new Date().toISOString(),
                 cut_date: null,
-                payment_method: paymentMethod
+                payment_method: paymentMethod,
+                ...(commissionDetails ? { commission_details: commissionDetails } : {}) // Solo guardar si es tarjeta
             };
 
             try {
@@ -689,17 +763,27 @@
             downloadReportBtn.disabled = false;
 
             const totalSalesValue = currentReportSales.reduce((sum, sale) => sum + sale.total, 0);
+
+            // Calcular ventas por método
             const ventasPorMetodo = {
                 efectivo: 0,
-                transferencia: 0
+                transferencia: 0,
+                tarjeta: 0
             };
             currentReportSales.forEach(sale => {
                 if (sale.payment_method === 'transferencia') {
                     ventasPorMetodo.transferencia++;
+                } else if (sale.payment_method === 'tarjeta') {
+                    ventasPorMetodo.tarjeta++;
                 } else {
                     ventasPorMetodo.efectivo++;
                 }
             });
+
+            // Calcular ganancia neta total (solo para ventas con tarjeta)
+            const totalNetIncome = currentReportSales
+                .filter(sale => sale.payment_method === 'tarjeta')
+                .reduce((sum, sale) => sum + (sale.commission_details?.netAmount || 0), 0);
 
             const allItems = currentReportSales.flatMap(sale => sale.items);
             const productSummary = allItems.reduce((summary, item) => {
@@ -728,6 +812,8 @@
                         <p><strong>Total Vendido (Pendiente):</strong> ${formatCurrency(totalSalesValue)}</p>
                         <p><strong>Ventas en efectivo:</strong> ${ventasPorMetodo.efectivo}</p>
                         <p><strong>Ventas por transferencia:</strong> ${ventasPorMetodo.transferencia}</p>
+                        <p><strong>Ventas con tarjeta (Clip):</strong> ${ventasPorMetodo.tarjeta}</p>
+                        ${ventasPorMetodo.tarjeta > 0 ? `<p><strong>Ganancia Neta por Ventas con Tarjeta:</strong> ${formatCurrency(totalNetIncome)}</p>` : ''}
                     </div>
                     <div class="p-4 bg-yellow-50 rounded-lg">
                         <h3 class="font-bold text-lg text-yellow-800">Productos Vendidos</h3>
@@ -788,6 +874,22 @@
             reportContentEl.querySelectorAll('.bg-green-50 li').forEach(li => {
                 textContent += `${li.innerText}\n`;
             });
+
+            // Agregar detalles de ventas con tarjeta
+            const tarjetaSales = allSales.filter(sale => sale.payment_method === 'tarjeta');
+            if (tarjetaSales.length > 0) {
+                textContent += `\n--- DETALLES DE VENTAS CON TARJETA (CLIP) ---\n`;
+                tarjetaSales.forEach(sale => {
+                    const details = sale.commission_details;
+                    if (details) {
+                        textContent += `\nVenta ID: ${sale.id}\n`;
+                        textContent += `Subtotal: ${formatCurrency(details.subtotal)}\n`;
+                        textContent += `Comisión (3.60%): -${formatCurrency(details.commission)}\n`;
+                        textContent += `IVA de la comisión (16%): -${formatCurrency(details.ivaOnCommission)}\n`;
+                        textContent += `Ganancia Neta: ${formatCurrency(details.netAmount)}\n`;
+                    }
+                });
+            }
 
             const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
@@ -959,6 +1061,7 @@
             // Botones método de pago
             document.getElementById('btn-efectivo').addEventListener('click', () => actualizarMetodoPago('efectivo'));
             document.getElementById('btn-transferencia').addEventListener('click', () => actualizarMetodoPago('transferencia'));
+            document.getElementById('btn-tarjeta').addEventListener('click', () => actualizarMetodoPago('tarjeta'));
         });
     </script>
 </body>
