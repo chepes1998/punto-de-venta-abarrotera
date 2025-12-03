@@ -875,11 +875,11 @@
                 textContent += `${li.innerText}\n`;
             });
 
-            // Agregar detalles de ventas con tarjeta
-            const tarjetaSales = allSales.filter(sale => sale.payment_method === 'tarjeta');
-            if (tarjetaSales.length > 0) {
+            // ✅ CORRECCIÓN CLAVE: Solo ventas con tarjeta PENDIENTES (sin cut_date)
+            const tarjetaSalesPendientes = allSales.filter(sale => sale.payment_method === 'tarjeta' && !sale.cut_date);
+            if (tarjetaSalesPendientes.length > 0) {
                 textContent += `\n--- DETALLES DE VENTAS CON TARJETA (CLIP) ---\n`;
-                tarjetaSales.forEach(sale => {
+                tarjetaSalesPendientes.forEach(sale => {
                     const details = sale.commission_details;
                     if (details) {
                         textContent += `\nVenta ID: ${sale.id}\n`;
